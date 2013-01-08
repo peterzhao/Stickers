@@ -1,0 +1,6 @@
+*/.DS_store
+.DS_Store
+*.swp
+node_modules/express node_modules/jade node_modules/mongoose node_modules/stylus
+public/css/style.css
+node_modules/
