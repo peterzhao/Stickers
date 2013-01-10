@@ -1,21 +1,20 @@
 var Sticker = require('./../lib/sticker')
+var StickerService = require('./../lib/stickerService')
 
 exports.list = function(req, res){
   Sticker.find(function(err, stickers){
     if(!err)
-      return res.render('stickers', {stickers: stickers, title: 'Stickers'});
+      return res.send(stickers);
     else
       return console.log(err);
   });
 }
 
 exports.create = function(req, res){
-  var sticker = new Sticker({title: req.body.title});
-  sticker.save(function(err, sticker){
-    if(!err)
-      res.redirect('/stickers');
-    else
-      console.log(err);
-  });
+  StickerService.create(req.body)
+  .then(
+    function(sticker){ res.send(sticker);},
+    function(err){ console.log(err);}
+  );
 }
 

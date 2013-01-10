@@ -1,5 +1,51 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .row-fluid
+    .span2
+      h1 Stickers
+    .span3.offset7
+      button#addStickerBtn.btn(role="button") 
+        i.icon-pencil
+        |  New Sticker
+ 
+
+  #newStickerModal.modal.hide.fade(tabindex="-1", role="dialog", aria-labelledby="New Sticker", aria-hidden="true", data-bind="with: newSticker")
+    form(method="post", action="/sticker")
+      .modal-header
+        button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+        h3#myModalLabel New Sticker
+      .modal-body
+         textarea#newTitle(rows="4", name="title", placeholder="write one sentence story here", required, data-bind="value: title")
+      .modal-footer
+        button.btn(data-dismiss="modal", aria-hidden="true") Close
+        #createStickerBtn.button.btn.btn-primary Create
+
+  #stickers(data-bind="foreach: stickers")
+    .sticker(data-bind="text: title")
+
+  script(type='text/javascript')
+    $(function(){
+      var viewModel = new stickers.Wall();
+      ko.applyBindings(viewModel);
+      viewModel.load();
+
+      $("#addStickerBtn").click(function(){
+        viewModel.addSticker();
+        $("#newStickerModal").modal("show");
+        $("#createStickerBtn").hide();
+      });
+
+      $("#createStickerBtn").live('click', function(){
+        viewModel.createSticker();
+        $("#newStickerModal").modal("hide");
+      });
+
+      $("#newTitle").live('keyup', function(){
+        if($("#newTitle").val())
+          $("#createStickerBtn").show();
+        else
+          $("#createStickerBtn").hide();
+
+      });
+    });
