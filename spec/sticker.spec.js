@@ -1,26 +1,24 @@
 var Sticker = require('./../lib/sticker')
+var helper = require('./testHelper')
 var mongoose = require('mongoose');
 
 
 describe("Sticker", function(){
 
   beforeEach(function(){
-    mongoose.connect('mongodb://localhost/stickersTest');
-    var db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'db connection error:'));
+    helper.openDb();
   });
 
   afterEach(function(){
-    mongoose.disconnect();
+    helper.closeDb();
   });
 
   it("should create a new one", function(done){
-      var sticker = new Sticker({title: 'test sticker'});
-      sticker.save(function(err, sticker){
+      var sticker = new Sticker({title: 'test sticker', _id: new Date().getTime()});
+      sticker.save(function(err, obj){
         expect(err).toBeNull();
-        Sticker.findById(sticker.id, function(err, obj){
-          expect(obj.id).toBe(sticker.id);
-          //console.log(obj.id);
+        Sticker.findById(sticker._id, function(err, obj2){
+          expect(obj2._id).toBe(sticker.id);
           done();
         });
       });
