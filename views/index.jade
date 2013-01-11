@@ -21,14 +21,31 @@ block content
         button.btn(data-dismiss="modal", aria-hidden="true") Close
         #createStickerBtn.button.btn.btn-primary Create
   #lanes(data-bind="foreach: lanes")
-    .lane
+    .lane(data-bind="style:{width: 100/($root.lanes().length + 1) + '%'}, attr:{id: title}", ondragover="allowDrop(event)", ondrop="drop(event)")
       .laneTitle(data-bind="text: title")
       .stickers(data-bind="foreach: stickers")
-        .sticker(data-bind="text: title")
+        .sticker(data-bind="text: title, attr:{id: _id}", draggable="true", ondragstart="drag(event)")
 
   script(type='text/javascript')
+    function allowDrop(ev)
+    {
+      ev.preventDefault();
+    }
+
+    function drag(ev)
+    {
+      ev.dataTransfer.setData("Text",ev.target.id);
+    }
+
+    function drop(ev)
+    {
+      ev.preventDefault();
+      var stickerId=ev.dataTransfer.getData("Text");
+      var newStatus = ev.target.id;
+      viewModel.changeStatus(stickerId, newStatus);
+    }
     $(function(){
-      var viewModel = new stickers.Wall();
+      window.viewModel = new stickers.Wall();
       ko.applyBindings(viewModel);
       viewModel.load();
 

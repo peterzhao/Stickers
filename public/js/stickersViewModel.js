@@ -15,7 +15,7 @@ stickers.Sticker = function(attrs){
             data: ko.toJSON(self),
             dataType: "json",
             success: function(result) {
-               self.id(result._id); 
+               self._id(result._id); 
               }
             });
 
@@ -26,6 +26,11 @@ stickers.Lane = function(title){
   var self = this;
   self.title = ko.observable(title);
   self.stickers = ko.observableArray([]);
+  self.getSticker = function(id){
+    return _.find(this.stickers(), function(sticker){
+      return sticker._id() == id;
+    });
+  }
 }
 
 stickers.Wall = function(attrs){
@@ -62,5 +67,17 @@ stickers.Wall = function(attrs){
   self.createSticker = function(){
     self.defaultLane.stickers.push(self.newSticker());
     self.newSticker().save();
+  }
+
+  self.changeStatus = function(stickerId, status){
+    var newLane = _.find(self.lanes(), function(lane){ return lane.title() == status});
+    if(!newLane) return;
+
+    var originalLane = _.find(self.lanes(), function(lane){ return lane.getSticker(stickerId) != null});
+    if(!originalLane) return;
+    var sticker = originalLane.getSticker(stickerId);
+    originalLane.stickers.remove(sticker);
+      newLane.stickers.push(sticker);
+    //sticker.save(); //Todo: save to server. Server need to handle create/update.
   }
 };
