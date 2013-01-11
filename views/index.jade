@@ -20,9 +20,11 @@ block content
       .modal-footer
         button.btn(data-dismiss="modal", aria-hidden="true") Close
         #createStickerBtn.button.btn.btn-primary Create
-
-  #stickers(data-bind="foreach: stickers")
-    .sticker(data-bind="text: title")
+  #lanes(data-bind="foreach: lanes")
+    .lane
+      .laneTitle(data-bind="text: title")
+      .stickers(data-bind="foreach: stickers")
+        .sticker(data-bind="text: title")
 
   script(type='text/javascript')
     $(function(){

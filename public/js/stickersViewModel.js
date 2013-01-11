@@ -22,27 +22,45 @@ stickers.Sticker = function(attrs){
   };
 };
 
+stickers.Lane = function(title){
+  var self = this;
+  self.title = ko.observable(title);
+  self.stickers = ko.observableArray([]);
+}
+
 stickers.Wall = function(attrs){
   var self = this;
   if(!attrs) attrs = {};
-  self.stickers = ko.observableArray([]);
-  self.newSticker = ko.observable(new stickers.Sticker());
+  self.statuses = ['Pending', 'In BA', 'Ready for Dev', 'In Dev', 'Ready for QA', 'In QA', 'Ready for Sign off', 'Completed'];//Todo: read from wall settings.
+  self.defaultStatus = self.statuses[0];//Todo: read from wall settings
+
+  self.lanes = ko.observableArray(_.map(self.statuses, function(status){ return new stickers.Lane(status);}));
+  self.defaultLane = _.find(self.lanes(), function(lane){return lane.title() == self.defaultStatus});
+
+  self.newSticker = ko.observable(new stickers.Sticker({status: self.defaultStatus}));
 
   self.load = function(){
     $.getJSON("/stickers", function(data){
-      self.stickers.removeAll();
-      _.each(data, function(stickerData){
-        self.stickers.push(new stickers.Sticker(stickerData));
-      });
+      var groupedStickers = _.groupBy(data, 'status');
+      
+      for(var status in groupedStickers){
+        var matchedLane = _.find(self.lanes(), function(lane){ return lane.title() == status; });
+        if(matchedLane){
+          _.each(groupedStickers[status], function(stickerData){
+            matchedLane.stickers.push(new stickers.Sticker(stickerData));
+          }); 
+        }
+        
+      }
     });
   };
 
   self.addSticker = function(){
-    self.newSticker(new stickers.Sticker());
+    self.newSticker(new stickers.Sticker({status: self.defaultStatus}));
   };
 
   self.createSticker = function(){
-    self.stickers.push(self.newSticker());
+    self.defaultLane.stickers.push(self.newSticker());
     self.newSticker().save();
   }
 };
