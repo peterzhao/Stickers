@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+
+  <script type="text/javascript" src="lib/console-runner.js"></script>
+
+  <!-- SOURCE FILES -->
+  <script type="text/javascript" src="../../public/js/underscore-min.js"></script>
+  <script type="text/javascript" src="../../public/js/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="../../public/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../../public/js/knockout-2.2.0.js"></script>
+  <script type="text/javascript" src="../../public/js/stickersViewModel.js"></script>
+
+  <!--Mock Ajax -->
+   <script type="text/javascript">
+     var ajaxOptions;
+     jQuery.ajax = function(options){
+     ajaxOptions = options;
+    };
+   </script>
+
+  <!-- TEST FILES -->
+  <script type="text/javascript" src="stickersViewModel.spec.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+  var console_reporter = new jasmine.ConsoleReporter();
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().addReporter(console_reporter);
+  jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>
+

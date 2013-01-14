@@ -8,7 +8,7 @@ stickers.Sticker = function(attrs){
   self.title = ko.observable(attrs.title);
 
   self.save = function(){
-    jQuery.ajax({
+    $.ajax({
             url: "/sticker",
             contentType: 'application/json; charset=utf-8',
             type: "POST",
@@ -36,7 +36,7 @@ stickers.Lane = function(title){
 stickers.Wall = function(attrs){
   var self = this;
   if(!attrs) attrs = {};
-  self.statuses = ['Pending', 'In BA', 'Ready for Dev', 'In Dev', 'Ready for QA', 'In QA', 'Ready for Sign off', 'Completed'];//Todo: read from wall settings.
+  self.statuses = attrs.statuses || ['Pending', 'In BA', 'Ready for Dev', 'In Dev', 'Ready for QA', 'In QA', 'Ready for Sign off', 'Completed'];//Todo: read from wall settings.
   self.defaultStatus = self.statuses[0];//Todo: read from wall settings
 
   self.lanes = ko.observableArray(_.map(self.statuses, function(status){ return new stickers.Lane(status);}));
@@ -45,18 +45,20 @@ stickers.Wall = function(attrs){
   self.newSticker = ko.observable(new stickers.Sticker({status: self.defaultStatus}));
 
   self.load = function(){
-    $.getJSON("/stickers", function(data){
-      var groupedStickers = _.groupBy(data, 'status');
-      
-      for(var status in groupedStickers){
-        var matchedLane = _.find(self.lanes(), function(lane){ return lane.title() == status; });
-        if(matchedLane){
-          _.each(groupedStickers[status], function(stickerData){
-            matchedLane.stickers.push(new stickers.Sticker(stickerData));
-          }); 
+    $.ajax({
+        url: "/stickers",
+        type: "GET",
+        success: function(data){
+          var groupedStickers = _.groupBy(data, 'status');
+          for(var status in groupedStickers){
+            var matchedLane = _.find(self.lanes(), function(lane){ return lane.title() == status; });
+            if(matchedLane){
+              _.each(groupedStickers[status], function(stickerData){
+                matchedLane.stickers.push(new stickers.Sticker(stickerData));
+              }); 
+            }
+          }
         }
-        
-      }
     });
   };
 

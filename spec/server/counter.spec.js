@@ -1,4 +1,4 @@
-var counter = require('./../lib/counter');
+var counter = require('./../../lib/counter');
 var helper = require('./testHelper');
 
 

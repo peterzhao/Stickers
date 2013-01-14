@@ -1,4 +1,4 @@
-var Sticker = require('./../lib/sticker')
+var Sticker = require('./../../lib/sticker')
 var helper = require('./testHelper')
 var mongoose = require('mongoose');
 

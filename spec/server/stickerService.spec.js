@@ -1,4 +1,4 @@
-var StickerService = require('./../lib/stickerService');
+var StickerService = require('./../../lib/stickerService');
 var Q = require('q');
 var helper = require('./testHelper');
 
