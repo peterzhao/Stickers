@@ -10,11 +10,13 @@ exports.list = function(req, res){
   });
 }
 
-exports.create = function(req, res){
-  StickerService.create(req.body)
-  .then(
-    function(sticker){ res.send(sticker);},
-    function(err){ console.log(err);}
-  );
+exports.save = function(req, res){
+  StickerService.save(req.body, function(err, sticker){
+    if(err) {
+      console.log(err);
+      return res.send(err, 500);
+    }
+    res.send(sticker);    
+  });
 }
 

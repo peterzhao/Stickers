@@ -18,7 +18,7 @@ describe("Sticker", function(){
       sticker.save(function(err, obj){
         expect(err).toBeNull();
         Sticker.findById(sticker._id, function(err, obj2){
-          expect(obj2._id).toBe(sticker.id);
+          expect(obj2._id).toBe(sticker._id);
           done();
         });
       });

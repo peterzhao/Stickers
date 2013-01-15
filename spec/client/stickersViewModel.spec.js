@@ -21,6 +21,11 @@ describe("stickersViewModel", function(){
     expect(wall.lanes()[0].stickers()[0].title()).toBe('sticker2');
     expect(wall.lanes()[1].stickers()[0].title()).toBe('sticker1');
     expect(wall.lanes()[1].stickers()[1].title()).toBe('sticker3');
+
+    wall.lanes()[0].stickers()[0].status('done');//change status of sticker
+    expect(wall.lanes()[0].stickers().length).toBe(0);
+    expect(wall.lanes()[1].stickers().length).toBe(3);//should switch lanes
+
   }); 
 
   it("should add new sticker to the default lane", function(){
@@ -37,5 +42,22 @@ describe("stickersViewModel", function(){
 
      expect(wall.lanes()[0].stickers()[0]._id()).toBe('1234');
 
+  });
+
+  it("should change status", function(){
+    var wall = new stickers.Wall({statuses: ['new', 'done']});
+    var sticker = new stickers.Sticker({status:'new', _id:'123'});
+    wall.addToWall(sticker);
+    expect(wall.lanes()[0].stickers().length).toBe(1);
+    expect(wall.lanes()[1].stickers().length).toBe(0);
+
+    spyOn(sticker, 'save');
+
+    wall.changeStatus(sticker._id(), 'done');
+    expect(wall.lanes()[0].stickers().length).toBe(0);
+    expect(wall.lanes()[1].stickers().length).toBe(1);
+    expect(sticker.status()).toBe('done');
+
+    expect(sticker.save).toHaveBeenCalled();
   });
 });

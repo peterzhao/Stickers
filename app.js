@@ -42,7 +42,7 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/users', user.list);
-app.post('/sticker', sticker.create);
+app.post('/sticker', sticker.save);
 app.get('/stickers', sticker.list);
 
 http.createServer(app).listen(app.get('port'), function(){

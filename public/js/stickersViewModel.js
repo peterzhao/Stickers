@@ -6,7 +6,6 @@ stickers.Sticker = function(attrs){
   self._id = ko.observable(attrs._id);
   self.status = ko.observable(attrs.status);
   self.title = ko.observable(attrs.title);
-
   self.save = function(){
     $.ajax({
             url: "/sticker",
@@ -20,6 +19,13 @@ stickers.Sticker = function(attrs){
             });
 
   };
+  var statusEventsubscriber = null;
+  self.registerStatusEvent = function(handler){
+    if(statusEventsubscriber) statusEventsubscriber.dispose();
+    statusEventsubscriber = self.status.subscribe(function(newStatus){
+      handler(self);
+    });
+  }
 };
 
 stickers.Lane = function(title){
@@ -44,42 +50,70 @@ stickers.Wall = function(attrs){
 
   self.newSticker = ko.observable(new stickers.Sticker({status: self.defaultStatus}));
 
+ 
+  
   self.load = function(){
     $.ajax({
         url: "/stickers",
         type: "GET",
         success: function(data){
-          var groupedStickers = _.groupBy(data, 'status');
-          for(var status in groupedStickers){
-            var matchedLane = _.find(self.lanes(), function(lane){ return lane.title() == status; });
-            if(matchedLane){
-              _.each(groupedStickers[status], function(stickerData){
-                matchedLane.stickers.push(new stickers.Sticker(stickerData));
-              }); 
-            }
-          }
+          _.each(data, function(stickerData){
+            var sticker = new stickers.Sticker(stickerData);
+            self.addToWall(sticker);
+        });
         }
     });
   };
 
-  self.addSticker = function(){
+  
+
+  self.resetNewSticker = function(){
     self.newSticker(new stickers.Sticker({status: self.defaultStatus}));
   };
 
   self.createSticker = function(){
-    self.defaultLane.stickers.push(self.newSticker());
+    self.addToWall(self.newSticker());
     self.newSticker().save();
   }
 
-  self.changeStatus = function(stickerId, status){
-    var newLane = _.find(self.lanes(), function(lane){ return lane.title() == status});
-    if(!newLane) return;
-
-    var originalLane = _.find(self.lanes(), function(lane){ return lane.getSticker(stickerId) != null});
-    if(!originalLane) return;
-    var sticker = originalLane.getSticker(stickerId);
-    originalLane.stickers.remove(sticker);
-      newLane.stickers.push(sticker);
-    //sticker.save(); //Todo: save to server. Server need to handle create/update.
+  self.changeStatus = function(id, status){
+    var sticker = getSticker(id);
+    sticker.status(status);
+    sticker.save(); 
   }
-};
+
+  self.addToWall = function(sticker){
+     moveToLane(sticker);
+     sticker.registerStatusEvent(moveToLane);
+  }
+
+  function getSticker(id){
+    for(var laneIndex in self.lanes()){
+      var sticker = self.lanes()[laneIndex].getSticker(id);
+      if(sticker) return sticker;
+    }
+    return null;
+  }
+
+  function getLane(status){
+    return _.find(self.lanes(), function(lane){
+      return lane.title() == status;
+    });
+  }
+
+  function getLaneBySticker(sticker){
+    return _.find(self.lanes(), function(lane){
+      return _.contains(lane.stickers(), sticker);
+    });
+  }
+
+ 
+  function moveToLane(sticker){
+     var originalLane = getLaneBySticker(sticker);
+     if(originalLane) originalLane.stickers.remove(sticker);
+
+    var newLane = getLane(sticker.status());
+    if(newLane) newLane.stickers.push(sticker);
+  }
+
+ };
