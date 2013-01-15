@@ -2,11 +2,12 @@ var Sticker = require('./../lib/sticker')
 var StickerService = require('./../lib/stickerService')
 
 exports.list = function(req, res){
-  Sticker.find(function(err, stickers){
-    if(!err)
-      return res.send(stickers);
-    else
-      return console.log(err);
+  StickerService.get(req.params.lastModified, function(err, stickers){
+    if(err){
+      console.log(err);
+      res.send(err, 500);
+    }
+    return res.send(stickers);      
   });
 }
 
