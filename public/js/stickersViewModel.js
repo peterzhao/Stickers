@@ -9,12 +9,17 @@ stickers.Sticker = function(attrs){
   self.status = ko.observable(attrs.status);
   self.title = ko.observable(attrs.title);
   self.body = ko.observable(attrs.body);
+  self.bodyHtml = ko.computed(function(){    
+    return marked(self.body() || "");
+  });
   self.save = function(){
+    var data = ko.toJS(self);
+    delete data.bodyHtml;
     $.ajax({
             url: "/sticker",
             contentType: 'application/json; charset=utf-8',
             type: "POST",
-            data: ko.toJSON(self),
+            data: JSON.stringify(data),
             dataType: "json",
             success: function(result) {
                self._id(result._id); 
@@ -52,8 +57,8 @@ stickers.Wall = function(attrs){
   self.statuses = attrs.statuses || ['Pending', 'In BA', 'Ready for Dev', 'In Dev', 'Ready for QA', 'In QA', 'Ready for Sign off', 'Completed'];//Todo: read from wall settings.
   self.defaultStatus = self.statuses[0];//Todo: read from wall settings
   self.lanes = ko.observableArray(_.map(self.statuses, function(status){ return new stickers.Lane(status);}));
-  self.newSticker = ko.observable(new stickers.Sticker({status: self.defaultStatus}));
-  
+  self.newSticker = ko.observable(null);
+  self.viewingSticker = ko.observable(null);
   self.pullUpdate = function(){
     var url = "/stickers";
     if(lastModified) url += "?lastModified=" + lastModified;
@@ -79,7 +84,7 @@ stickers.Wall = function(attrs){
       setTimeout(self.startPull, 500);
   }
 
-  self.resetNewSticker = function(){
+  self.setNewSticker = function(){
     self.newSticker(new stickers.Sticker({status: self.defaultStatus}));
   };
 
@@ -106,6 +111,11 @@ stickers.Wall = function(attrs){
        if(sticker[prop] !== undefined)
          sticker[prop](stickerData[prop]);       
      }
+  }
+
+  self.viewSticker = function(id){
+    var sticker = getSticker(id);
+    self.viewingSticker(sticker);
   }
 
   function getSticker(id){

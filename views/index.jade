@@ -16,17 +16,33 @@ block content
         button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
         h3#myModalLabel New Sticker
       .modal-body
-         textarea#newTitle(rows="4", name="title", placeholder="write one sentence story here", required, data-bind="value: title")
+        input#newStickerTitle(name="title", placeholder="write the sticker title here", data-bind="value: title", required)
+        textarea#newStickerBody(rows="15", name="body", placeholder="write the sticker dody here. Markdown format is supported.", data-bind="value: body")
       .modal-footer
         button.btn(data-dismiss="modal", aria-hidden="true") Close
         #createStickerBtn.button.btn.btn-primary Create
+  
+  
+  #viewingStickerModal.modal.hide.fade(tabindex="-1", role="dialog", aria-labelledby="View Sticker", aria-hidden="true", data-bind="with: viewingSticker")
+    .modal-header
+      button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+      h4#viewStickerTitle(data-bind="text: title")
+    .modal-body
+      #viewStickerBody(data-bind="html: bodyHtml") 
+    .modal-footer
+      button.btn(data-dismiss="modal", aria-hidden="true") Close
+      #editStickerBtn.button.btn.btn-primary Edit
+
+  
+  
+
   #lanes(data-bind="foreach: lanes")
     .lane(data-bind="style:{width: 100/($root.lanes().length + 1) + '%'}, attr:{id: title}", ondragover="allowDrop(event)", ondrop="drop(event)")
       .laneTitle(data-bind="text: title")
       .stickers(data-bind="foreach: stickers")
         .sticker(data-bind="attr:{id: _id}", draggable="true", ondragstart="drag(event)")
           .sticker-id(data-bind="text: _id")
-          .sticker-body(data-bind="text: title")
+          .sticker-title(data-bind="text: title")
 
   script(type='text/javascript')
     function allowDrop(ev)
@@ -52,7 +68,7 @@ block content
       viewModel.startPull();
 
       $("#addStickerBtn").click(function(){
-        viewModel.resetNewSticker();
+        viewModel.setNewSticker();
         $("#newStickerModal").modal("show");
         $("#createStickerBtn").hide();
       });
@@ -68,5 +84,11 @@ block content
         else
           $("#createStickerBtn").hide();
 
+      });
+
+      $(".sticker").live('click', function(){
+        var id = $(this).attr("id");
+        viewModel.viewSticker(id);
+        $("#viewingStickerModal").modal("show");
       });
     });
