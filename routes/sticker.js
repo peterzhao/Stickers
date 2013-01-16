@@ -3,7 +3,7 @@ var StickerService = require('./../lib/stickerService')
 
 exports.list = function(req, res){
   var lastModified
-  if(req.params.lastModified) lastModified = new Date(req.params.lastModified);
+  if(req.query.lastModified) lastModified = new Date(req.query.lastModified);
   StickerService.get(lastModified, function(err, stickers){
     if(err){
       console.log(err.stack);
