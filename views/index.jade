@@ -49,7 +49,7 @@ block content
     $(function(){
       window.viewModel = new stickers.Wall();
       ko.applyBindings(viewModel);
-      viewModel.load();
+      viewModel.startPull();
 
       $("#addStickerBtn").click(function(){
         viewModel.resetNewSticker();
