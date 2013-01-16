@@ -2,8 +2,8 @@ describe("stickersViewModel", function(){
   it("should add new sticker to the default lane", function(){
      var wall = new stickers.Wall({statuses: ['new', 'done']});
      wall.setNewSticker();
-     wall.newSticker().title("hi");
-     wall.createSticker();
+     wall.editingSticker().title("hi");
+     wall.saveEditingSticker();
      expect(wall.lanes()[0].stickers().length).toBe(1);
      expect(wall.lanes()[0].stickers()[0].title()).toBe('hi');
      expect(ajaxOptions.type).toEqual("POST");

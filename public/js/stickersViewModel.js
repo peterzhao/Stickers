@@ -12,6 +12,12 @@ stickers.Sticker = function(attrs){
   self.bodyHtml = ko.computed(function(){    
     return marked(self.body() || "");
   });
+  self.headerLabel = function(){
+    return self._id() ? "Edit Sticker" : "New Sticker";
+  };
+  self.saveButtonLabel = function(){
+    return self._id()? "Save" : "Create";
+  }
   self.save = function(){
     var data = ko.toJS(self);
     delete data.bodyHtml;
@@ -57,7 +63,7 @@ stickers.Wall = function(attrs){
   self.statuses = attrs.statuses || ['Pending', 'In BA', 'Ready for Dev', 'In Dev', 'Ready for QA', 'In QA', 'Ready for Sign off', 'Completed'];//Todo: read from wall settings.
   self.defaultStatus = self.statuses[0];//Todo: read from wall settings
   self.lanes = ko.observableArray(_.map(self.statuses, function(status){ return new stickers.Lane(status);}));
-  self.newSticker = ko.observable(null);
+  self.editingSticker = ko.observable(null);
   self.viewingSticker = ko.observable(null);
   self.pullUpdate = function(){
     var url = "/stickers";
@@ -85,12 +91,13 @@ stickers.Wall = function(attrs){
   }
 
   self.setNewSticker = function(){
-    self.newSticker(new stickers.Sticker({status: self.defaultStatus}));
+    self.editingSticker(new stickers.Sticker({status: self.defaultStatus}));
   };
 
-  self.createSticker = function(){
-    self.add(self.newSticker());
-    self.newSticker().save();
+  self.saveEditingSticker = function(){
+    if(!self.editingSticker()._id())
+      self.add(self.editingSticker());
+    self.editingSticker().save();
   }
 
   self.changeStatus = function(id, status){
@@ -116,6 +123,11 @@ stickers.Wall = function(attrs){
   self.viewSticker = function(id){
     var sticker = getSticker(id);
     self.viewingSticker(sticker);
+  }
+
+  self.editSticker = function(id){
+    var sticker = getSticker(id);
+    self.editingSticker(sticker);
   }
 
   function getSticker(id){

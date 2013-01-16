@@ -10,25 +10,25 @@ block content
         |  New Sticker
  
 
-  #newStickerModal.modal.hide.fade(tabindex="-1", role="dialog", aria-labelledby="New Sticker", aria-hidden="true", data-bind="with: newSticker")
+  #editingStickerModal.modal.hide.fade(tabindex="-1", role="dialog", aria-labelledby="New Sticker", aria-hidden="true", data-bind="with: editingSticker")
     form(method="post", action="/sticker")
       .modal-header
         button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
-        h3#myModalLabel New Sticker
+        h3(data-bind="text: headerLabel()")
       .modal-body
-        input#newStickerTitle(name="title", placeholder="write the sticker title here", data-bind="value: title", required)
-        textarea#newStickerBody(rows="15", name="body", placeholder="write the sticker dody here. Markdown format is supported.", data-bind="value: body")
+        input.title(name="title", placeholder="write the sticker title here", data-bind="value: title", required)
+        textarea.body(rows="15", name="body", placeholder="write the sticker dody here. Markdown format is supported.", data-bind="value: body")
       .modal-footer
         button.btn(data-dismiss="modal", aria-hidden="true") Close
-        #createStickerBtn.button.btn.btn-primary Create
+        #saveStickerBtn.button.btn.btn-primary(data-bind="text: saveButtonLabel()")
   
   
   #viewingStickerModal.modal.hide.fade(tabindex="-1", role="dialog", aria-labelledby="View Sticker", aria-hidden="true", data-bind="with: viewingSticker")
     .modal-header
       button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
-      h4#viewStickerTitle(data-bind="text: title")
+      h4.title(data-bind="text: title")
     .modal-body
-      #viewStickerBody(data-bind="html: bodyHtml") 
+      .body(data-bind="html: bodyHtml") 
     .modal-footer
       button.btn(data-dismiss="modal", aria-hidden="true") Close
       #editStickerBtn.button.btn.btn-primary Edit
@@ -69,20 +69,20 @@ block content
 
       $("#addStickerBtn").click(function(){
         viewModel.setNewSticker();
-        $("#newStickerModal").modal("show");
-        $("#createStickerBtn").hide();
+        $("#editingStickerModal").modal("show");
+        $("#saveStickerBtn").hide();
       });
 
-      $("#createStickerBtn").live('click', function(){
-        viewModel.createSticker();
-        $("#newStickerModal").modal("hide");
+      $("#saveStickerBtn").live('click', function(){
+        viewModel.saveEditingSticker();
+        $("#editingStickerModal").modal("hide");
       });
 
-      $("#newTitle").live('keyup', function(){
-        if($("#newTitle").val())
-          $("#createStickerBtn").show();
+      $("#editingStickerModal .title").live('keyup', function(){
+        if($("#editingStickerModal .title").val())
+          $("#saveStickerBtn").show();
         else
-          $("#createStickerBtn").hide();
+          $("#saveStickerBtn").hide();
 
       });
 
@@ -90,5 +90,11 @@ block content
         var id = $(this).attr("id");
         viewModel.viewSticker(id);
         $("#viewingStickerModal").modal("show");
+      });
+
+      $("#editStickerBtn").live('click', function(){
+        $("#viewingStickerModal").modal("hide");
+        viewModel.editSticker(viewModel.viewingSticker()._id());
+        $("#editingStickerModal").modal("show");
       });
     });
