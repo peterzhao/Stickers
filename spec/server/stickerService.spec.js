@@ -41,6 +41,7 @@ describe("StickerService", function(){
          expect(object2._id).toBe(id);
          expect(sticker.status).toBe('done');
          expect(sticker.lastModified >= start).toBe(true);
+         expect(object2.toObject().__v).toBe(1); //version incremented
          done();
        });
      });    
