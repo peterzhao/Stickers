@@ -21,9 +21,10 @@ block content
         #previewContainer(data-bind="visible: previewing, css: {previewing: previewing}")
           #previewLabel Preview
           #preview(data-bind="html: bodyHtml")
-        button#previewBtn(type="button")
-          i.icon-remove(data-bind="visible: previewing, click: disablePreviewing")
-          i.icon-eye-open(data-bind="visible: previewing() == false, click: enablePreviewing")
+        a.previewBtn(data-bind="visible: previewing, click: disablePreviewing", title="disable previewing")
+          i.icon-remove
+        a.previewBtn(data-bind="visible: previewing() == false, click: enablePreviewing", title="enable previewing")
+          i.icon-eye-open
           
       .modal-footer
         button.btn(data-dismiss="modal", aria-hidden="true") Close
