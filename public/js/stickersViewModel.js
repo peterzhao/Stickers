@@ -41,7 +41,11 @@ stickers.Sticker = function(attrs){
     statusEventsubscriber = self.status.subscribe(function(newStatus){
       handler(self);
     });
-  }
+  };
+
+  self.previewing = ko.observable(true);
+  self.disablePreviewing = function(){ self.previewing(false)}; 
+  self.enablePreviewing = function(){ self.previewing(true)}; 
 };
 
 stickers.Lane = function(title){
