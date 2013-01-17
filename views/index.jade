@@ -18,6 +18,7 @@ block content
       .modal-body
         input.title(name="title", placeholder="write the sticker title here", data-bind="value: title", required)
         textarea.body(rows="15", name="body", placeholder="write the sticker dody here. Markdown format is supported.", data-bind="value: body")
+        .preview.body(data-bind="html: bodyHtml") 
       .modal-footer
         button.btn(data-dismiss="modal", aria-hidden="true") Close
         #saveStickerBtn.button.btn.btn-primary(data-bind="text: saveButtonLabel()")
@@ -96,5 +97,9 @@ block content
         $("#viewingStickerModal").modal("hide");
         viewModel.editSticker(viewModel.viewingSticker()._id());
         $("#editingStickerModal").modal("show");
+      });
+
+      $("#editingStickerModal .modal-body textarea").live('keyup', function(){
+        $(this).trigger("change");
       });
     });
